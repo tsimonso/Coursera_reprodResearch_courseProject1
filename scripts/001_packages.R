@@ -1,7 +1,7 @@
 ##----------
 ## Packages
 ## ---------
-requiredPackages = c("downloader","readr","reader", "dplyr", "data.table", "lubridate", "finalfit")
+requiredPackages = c("downloader","readr","reader", "dplyr", "data.table", "lubridate", "finalfit","lattice","ggplot2","forcats")
 for(p in requiredPackages){
         if(!require(p,character.only = TRUE)) install.packages(p)
         library(p,character.only = TRUE)

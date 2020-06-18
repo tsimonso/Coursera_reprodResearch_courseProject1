@@ -8,7 +8,7 @@ sum(!complete.cases(activity))
 
 ## Calculate the proportion of missing data for 'steps'
 ## ----------------------------------------------------
-sum(is.na(activity_analytic1$steps))/length(activity_analytic1$steps)
+sum(is.na(activity$steps))/length(activity$steps)
 
 
 ## Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. 
@@ -18,27 +18,19 @@ sum(is.na(activity_analytic1$steps))/length(activity_analytic1$steps)
 
 ## Look for patterns in missing data
 ## ---------------------------------
-activity_analytic1%>%
+activity%>%
         missing_plot()
 
-activity_analytic1%>%
+activity%>%
         group_by(date)%>%
-        summarise(dailysteps=sum(steps),dailysteps.na.rm=sum(steps, na.rm = TRUE))%>%
-        filter(is.na(dailysteps))->activity_dayswithNA
-activity_dayswithNA
+        summarise(steps=sum(steps),stepsNArm=sum(steps, na.rm = TRUE))%>% #The value in the first column will be NA if there are NAs that day, The value in the second column will be the total number of steps that day, ignoring the NAs
+        filter(is.na(steps))
 ## interpretation: days have either no data or complete data
 
-activity_analytic2<-activity_analytic1
-for(i in activity_dayswithNA$date){
-        activity_analytic2[activity_analytic2$date==i,]$steps<-activity_interval$steps_mean
-}
-
-activity_imputation<-full_join(activity_analytic2,activity_interval,by="interval")
+activity_imputation<-full_join(activity,activity_interval,by="interval")
 activity_imputation%>%
         mutate(imputation=is.na(steps))->activity_imputation
 activity_imputation[activity_imputation$imputation==TRUE,]$steps<-round(activity_imputation[activity_imputation$imputation==TRUE,]$steps_mean)
-
-
 
 
 ## Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day.
@@ -49,12 +41,23 @@ activity_imputation[activity_imputation$imputation==TRUE,]$steps<-round(activity
 ## Calculate the total number of steps taken per day
 activity_imputation%>%
         group_by(date)%>%
-        summarise(dailysteps=sum(steps))->activity_daily_imputation
+        summarise(steps=sum(steps))->dailyActivity_wImputation
 
 ## Make a histogram of the total number of steps taken each day
-hist(activity_daily_imputation$dailysteps)
+nrNwi<-sum(complete.cases(dailyActivity_wImputation))
+setwd("./graphs")
+png("dailyActivity_wImput.png")
+hist(dailyActivity_wImputation$steps,ylim=c(0,40),
+     main="Distribution of daily activity \n (with imputation)",
+     xlab="Number of steps",ylab="Frequency")
+par(adj = 0)
+title(sub=paste("N=",nrNwi))
+par(adj = 0.5)
+dev.off()
+setwd(wd)
 
 ## Calculate and report the mean and median of the total number of steps taken per day
-activity_daily_imputation%>%
-        summarise(dailysteps_mean=mean(dailysteps, na.rm = TRUE), dailysteps_median=median(dailysteps, na.rm = TRUE))->dailyactivity_imputation_summary
-print(dailyactivity_imputation_summary)
+dailyActivity_wImputation%>%
+        summarise(steps_mean=mean(steps, na.rm = TRUE), steps_median=median(steps, na.rm = TRUE))->dailyActivity_wImputation_summary
+print(dailyActivity_wImputation_summary)
+

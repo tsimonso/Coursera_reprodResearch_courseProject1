@@ -2,14 +2,24 @@
 ## =================================================
 
 ## Calculate the total number of steps taken per day
-activity_analytic%>%
+activity%>%
         group_by(date)%>%
-        summarise(dailysteps=sum(steps))->activity_daily
+        summarise(steps=sum(steps))->dailyActivity
 
 ## Make a histogram of the total number of steps taken each day
-hist(activity_daily$dailysteps)
-
+nrNA<-sum(!complete.cases(dailyActivity))
+nrN<-sum(complete.cases(dailyActivity))
+setwd("./graphs")
+png("dailyActivity_woImput.png")
+hist(dailyActivity$steps,ylim=c(0,40),
+     main="Distribution of daily activity \n (without imputation)",
+     xlab="Number of steps",ylab="Frequency")
+par(adj = 0)
+title(sub=paste("N=",nrN, ", NA=",nrNA))
+par(adj = 0.5)
+dev.off()
+setwd(wd)
 ## Calculate and report the mean and median of the total number of steps taken per day
-activity_daily%>%
-        summarise(dailysteps_mean=mean(dailysteps, na.rm = TRUE), dailysteps_median=median(dailysteps, na.rm = TRUE))->dailyactivity_summary
-print(dailyactivity_summary)
+dailyActivity%>%
+        summarise(steps_mean=mean(steps, na.rm = TRUE), steps_median=median(steps, na.rm = TRUE))->dailyActivity_summary
+print(dailyActivity_summary)

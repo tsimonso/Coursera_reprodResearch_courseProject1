@@ -3,15 +3,29 @@
 
 ## Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 ## ----------------------------------------------------------------------------------------------------------------------------------------------------
-activity_analytic1%>%
+activity%>%
         group_by(interval)%>%
-        summarise(steps_mean=mean(steps,na.rm=TRUE))->activity_interval
+        summarise(steps_mean=mean(steps,na.rm=TRUE))->intervalActivity
 
-str(activity_interval)
+str(intervalActivity)
 
 ## plot
-with(activity_interval,plot(interval,steps_mean,type="l"))
+Nobs<-sum(complete.cases(activity))
+Ndays<-nrow(dailyActivity[!is.na(dailyActivity$steps),]) #number of days with complete data
+
+setwd("./graphs")
+png("intervalActivity.png")
+with(intervalActivity,plot(interval,steps_mean,type="l",
+                           main="Pattern of activity along the day",
+                           ylab="Average level of activity per 5-minute interval (Number of steps)",
+                           xlab="Interval (index number)",))
+par(adj = 0)
+title(sub=paste("Nr of days = ",Ndays,",     Total Nr of intervals = ",Nobs))
+par(adj = 0.5)
+dev.off()
+setwd(wd)
+
 
 ## Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 ## -------------------------------------------------------------------------------------------------------------
-activity_interval[activity_interval$steps_mean==max(activity_interval$steps_mean),]
+intervalActivity[intervalActivity$steps_mean==max(intervalActivity$steps_mean),]

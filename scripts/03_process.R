@@ -6,7 +6,8 @@ str(activity)
 ## Format the dates
 ##-----------------
 activity%>%
-        mutate(date=ymd(date))->activity_analytic1 # Contain missing values for steps. No  imputation yet.
+        rename(date_str=date) %>% #rename the string variable 'date' as 'date_str'
+        mutate(date=ymd(date_str)) %>% #create the variable 'date' formatted as a date
+        select(-date_str)->activity %>% #drop the string variable 'date_str'
 
-str(activity_analytic1)
-
+str(activity)
