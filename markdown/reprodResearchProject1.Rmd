@@ -13,11 +13,12 @@ s<<-"scripts"
 g<<-"graphs"
 m<<-"markdown"
 Sys.setlocale("LC_TIME", "C")           #language settings for time and date -> English
+Sys.setenv(TZ='GMT')
 ```
 
 ### Required packages
 ```{r message=FALSE}
-requiredPackages = c("downloader","readr","reader", "dplyr", "data.table", "lubridate", "finalfit","ggplot2","forcats","stringr","scales")
+requiredPackages = c("downloader","readr","reader", "dplyr", "data.table", "lubridate", "chron","finalfit","ggplot2","forcats","stringr","scales")
 for(p in requiredPackages){
         if(!require(p,character.only = TRUE)) install.packages(p)
         library(p,character.only = TRUE)
