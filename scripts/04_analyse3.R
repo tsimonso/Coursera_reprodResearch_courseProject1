@@ -28,7 +28,7 @@ activity%>%
 ## interpretation: days have either no data or complete data
 
 #prepare for imputation
-activity_imputation<-full_join(activity,intervalActivity,by="interval_chr")
+activity_imputation<-full_join(activity,intervalActivity,by="interval_t")
 activity_imputation%>%
         mutate(imputation=is.na(steps))->activity_imputation #create a logical vector that identifies the rows with missing data
 

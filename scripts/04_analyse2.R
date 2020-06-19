@@ -19,7 +19,7 @@ g<-ggplot(intervalActivity,aes(interval_t,steps_mean))+
         geom_line()+
         ggtitle("Pattern of activity along the day")+
         xlab("Time of the day")+
-        ylab("Average level of activity per 5-minute interval (Number of steps)")+
+        ylab("Average level of activity per 5-minute interval \n(Number of steps)")+
         scale_x_chron(format="%H:%M")
 setwd("./graphs")
 ggsave(filename="intervalActivity.png")
