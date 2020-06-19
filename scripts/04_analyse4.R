@@ -10,7 +10,7 @@ head(patternActivityWeekday)
 
 ## plot (ggplot2)
 
-patternActivityWeekday$interval_hm<-as.POSIXct(strptime(patternActivityWeekday$interval_chr, "%H:%M"))
+patternActivityWeekday$interval_hm<-as.POSIXct(strptime(patternActivityWeekday$interval_chr, "%H:%M")) #CAUTION: time setting should be GMT
 str(patternActivityWeekday)
 g<-ggplot(patternActivityWeekday,aes(interval_hm,steps))+
         geom_line()+

@@ -18,6 +18,7 @@ activity$hh<-unlist(str_match_all(activity$interval,"^[0-9][0-9]"))
 activity$mm<-unlist(str_match_all(activity$interval,"[0-9][0-9]$"))
 activity%>%
         mutate(interval_chr=paste(hh,mm,sep=":"))%>%
+        mutate(interval_t=times(paste0(interval_chr, ":00")))%>% # 'chron' package 
         select(-c(hh,mm))->activity# as a character variable
 str(activity)
 
