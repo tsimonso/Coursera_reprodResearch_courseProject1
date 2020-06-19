@@ -13,7 +13,6 @@ s<<-"scripts"
 g<<-"graphs"
 m<<-"markdown"
 Sys.setlocale("LC_TIME", "C")           #language settings for time and date -> English
-Sys.setenv(TZ='GMT')
 ```
 
 ### Required packages
@@ -65,7 +64,7 @@ while(not4digits>0){
 }
 ```
 
-We will now separate hours and minutes/
+We will now separate hours and minutes
 ```{r}
 # We extract the hours (encoded in the first two digits)
 activity$hh<-unlist(str_match_all(activity$interval,"^[0-9][0-9]"))
@@ -74,8 +73,10 @@ activity$hh<-unlist(str_match_all(activity$interval,"^[0-9][0-9]"))
 activity$mm<-unlist(str_match_all(activity$interval,"[0-9][0-9]$"))
 
 # We use these two variables to create a new character variable containing the time (HH:MM)
+# and a new 'times' variable (HH:MM:SS, package 'chron') that allows encoding times without dates.
 activity%>%
         mutate(interval_chr=paste(hh,mm,sep=":"))%>%
+        mutate(interval_t=times(paste0(interval_chr, ":00")))%>% # 'chron' package 
         select(-c(hh,mm))->activity # We discard the variables for hours and minutes
 str(activity)
 ```
@@ -118,7 +119,7 @@ summary(dailyActivity$steps)
 Prepare the data
 ```{r}
 activity%>%
-        group_by(interval_chr)%>%
+        group_by(interval_t)%>%
         summarise(steps_mean=mean(steps,na.rm=TRUE))->intervalActivity
 intervalActivity<-as.data.frame(intervalActivity)
 
@@ -131,14 +132,15 @@ Plot the data
 ## plot
 Nobs<-sum(complete.cases(activity))
 Ndays<-nrow(dailyActivity[!is.na(dailyActivity$steps),]) #number of days with complete data
-par(mar=c(5,5,3,3))
 
-with(intervalActivity,plot(strptime(interval_chr, "%H:%M"),steps_mean,type="l",
-                           main="Pattern of activity along the day",
-                           ylab="Average level of activity per 5-minute interval (Number of steps)",
-                           xlab="Time of the day"))
-par(adj = 0)
-title(sub=paste("Nr of days = ",Ndays,",     Total Nr of intervals = ",Nobs))
+g<-ggplot(intervalActivity,aes(interval_t,steps_mean))+
+        geom_line()+
+        ggtitle("Pattern of activity along the day")+
+        xlab("Time of the day")+
+        ylab("Average level of activity per 5-minute interval \n(Number of steps)")+
+        labs(caption=paste("Number of days =", Ndays,"\nTotal number of intervals =", Nobs))+
+        scale_x_chron(format="%H:%M")
+g
 ```
 
 The figures shows a large peak in the morning followed by smaller peaks in the afternoon.  
@@ -181,7 +183,7 @@ activity%>%
 **TASK 4.3 Create a new dataset that is equal to the original dataset but with the missing data filled in.**
 ```{r}
 #prepare for imputation
-activity_imputation<-full_join(activity,intervalActivity,by="interval_chr")
+activity_imputation<-full_join(activity,intervalActivity,by="interval_t")
 activity_imputation%>%
         mutate(imputation=is.na(steps))->activity_imputation #create a logical vector that identifies the rows with missing data
 
@@ -189,7 +191,7 @@ activity_imputation%>%
 activity_imputation[activity_imputation$imputation==TRUE,]$steps<-round(activity_imputation[activity_imputation$imputation==TRUE,]$steps_mean)
 
 activity_imputation%>%
-        select(date, interval_chr, imputation,steps_mean, steps)%>%
+        select(date, interval_t, imputation,steps_mean, steps)%>%
         head()
 ```
 
@@ -219,24 +221,22 @@ summary(dailyActivity_wImputation$steps)
 activity_imputation%>%
         mutate(weekday7=factor(weekdays(date),levels=c("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday")))%>%
         mutate(weekday2=fct_collapse(weekday7, Weekday = c("Monday","Tuesday","Wednesday","Thursday","Friday"), Weekend = c("Saturday","Sunday")))%>%
-        group_by(interval_chr,weekday2)%>%
+        group_by(interval_t,weekday2)%>%
         summarise(steps=mean(steps,na.rm=TRUE))->patternActivityWeekday
 patternActivityWeekday<-as.data.frame(patternActivityWeekday)
 str(patternActivityWeekday)
+head(patternActivityWeekday)
 ```
 
 **TASK 5.2 Make a panel plot containing a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).**  
 ```{r}
-patternActivityWeekday$interval_hm<-as.POSIXct(strptime(patternActivityWeekday$interval_chr, "%H:%M"))
-str(patternActivityWeekday)
-g<-ggplot(patternActivityWeekday,aes(interval_hm,steps))+
+g<-ggplot(patternActivityWeekday,aes(interval_t,steps))+
         geom_line()+
         facet_grid(.~weekday2)+
         ggtitle("Activity pattern on weekdays and weekends")+
         xlab("Interval")+
         ylab("Steps")+
-        scale_x_datetime(breaks = date_breaks("4 hours"), labels = date_format("%H:%M")) #require the 'scales' package
+        scale_x_chron(format="%H:%M")
 g
-
 ```
 
