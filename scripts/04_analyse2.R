@@ -4,10 +4,12 @@
 ## Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 ## ----------------------------------------------------------------------------------------------------------------------------------------------------
 activity%>%
-        group_by(interval)%>%
+        group_by(interval_chr)%>%
         summarise(steps_mean=mean(steps,na.rm=TRUE))->intervalActivity
-
+intervalActivity<-as.data.frame(intervalActivity)
 str(intervalActivity)
+head(intervalActivity)
+summary(dailyActivity$steps)
 
 ## plot
 Nobs<-sum(complete.cases(activity))
@@ -15,10 +17,10 @@ Ndays<-nrow(dailyActivity[!is.na(dailyActivity$steps),]) #number of days with co
 
 setwd("./graphs")
 png("intervalActivity.png")
-with(intervalActivity,plot(interval,steps_mean,type="l",
+with(intervalActivity,plot(strptime(interval_chr, "%H:%M"),steps_mean,type="l",
                            main="Pattern of activity along the day",
                            ylab="Average level of activity per 5-minute interval (Number of steps)",
-                           xlab="Interval (index number)",))
+                           xlab="Time of the day (hh:mm)"))
 par(adj = 0)
 title(sub=paste("Nr of days = ",Ndays,",     Total Nr of intervals = ",Nobs))
 par(adj = 0.5)

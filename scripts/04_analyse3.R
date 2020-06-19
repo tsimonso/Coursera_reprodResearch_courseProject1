@@ -27,11 +27,14 @@ activity%>%
         filter(is.na(steps))
 ## interpretation: days have either no data or complete data
 
-activity_imputation<-full_join(activity,activity_interval,by="interval")
+#prepare for imputation
+activity_imputation<-full_join(activity,intervalActivity,by="interval_chr")
 activity_imputation%>%
-        mutate(imputation=is.na(steps))->activity_imputation
-activity_imputation[activity_imputation$imputation==TRUE,]$steps<-round(activity_imputation[activity_imputation$imputation==TRUE,]$steps_mean)
+        mutate(imputation=is.na(steps))->activity_imputation #create a logical vector that identifies the rows with missing data
 
+#do the imputation
+activity_imputation[activity_imputation$imputation==TRUE,]$steps<-round(activity_imputation[activity_imputation$imputation==TRUE,]$steps_mean)
+head(activity_imputation)
 
 ## Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day.
 ## Do these values differ from the estimates from the first part of the assignment?

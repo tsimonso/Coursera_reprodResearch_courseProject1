@@ -5,7 +5,7 @@
 activity%>%
         group_by(date)%>%
         summarise(steps=sum(steps))->dailyActivity
-
+dailyActivity<-as.data.frame(dailyActivity)
 ## Make a histogram of the total number of steps taken each day
 nrNA<-sum(!complete.cases(dailyActivity))
 nrN<-sum(complete.cases(dailyActivity))
