@@ -2,7 +2,8 @@
 title: "Reproduceable Research - Project1"
 author: "Thomas Simonson"
 date: "18/06/2020"
-output: html_document
+output: md_document
+
 ---
 
 ```{r include=FALSE}
@@ -394,4 +395,9 @@ g<-ggplot(patternActivityWeekday,aes(interval_t,steps))+
         scale_x_chron(format="%H:%M")
 g
 ```
+  
+
+
+&nbsp;  
+
 We observe that on weekdays, there is a large peak around 8:30 AM, followed by smaller peaks in the afternoon, whereas on weekends, the activity is more evenly distributed along the day.

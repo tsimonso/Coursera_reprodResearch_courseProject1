@@ -498,3 +498,9 @@ averaged across all weekday days or weekend days (y-axis).**
     g
 
 ![](PA1_template_files/figure-markdown_strict/unnamed-chunk-20-1.png)
+
+ 
+
+We observe that on weekdays, there is a large peak around 8:30 AM,
+followed by smaller peaks in the afternoon, whereas on weekends, the
+activity is more evenly distributed along the day.
