@@ -2,7 +2,7 @@
 title: "Reproduceable Research - Project1"
 author: "Thomas Simonson"
 date: "18/06/2020"
-output: md_document
+output: html_document
 ---
 
 ```{r include=FALSE}
